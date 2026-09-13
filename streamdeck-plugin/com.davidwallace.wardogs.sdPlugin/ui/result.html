@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Firing Solution</title>
+<link rel="stylesheet" href="pi.css">
+</head>
+<body>
+<div class="pi">
+  <div class="row">
+    <label for="field">Show</label>
+    <select id="field" data-setting="field" data-default="dam">
+      <option value="dam">D / A / M (compact)</option>
+      <option value="mil">MIL (elevation)</option>
+      <option value="azimuth">Azimuth</option>
+      <option value="distance">Distance</option>
+      <option value="all">All three (stacked)</option>
+    </select>
+  </div>
+  <div class="row">
+    <label for="press">Press does</label>
+    <select id="press" data-setting="press" data-default="copy">
+      <option value="copy">Copy firing line to clipboard</option>
+      <option value="swap">Swap Artillery / Target</option>
+      <option value="weapon">Next weapon</option>
+      <option value="save">Save target</option>
+      <option value="next">Next saved target</option>
+      <option value="prev">Previous saved target</option>
+      <option value="focus">Focus / launch app</option>
+      <option value="none">Nothing (display only)</option>
+    </select>
+  </div>
+  <p class="hint">The key is a live readout of the current solution; it turns red when the target is out of range. The press action is independent of what is shown.</p>
+</div>
+<script src="pi.js"></script>
+</body>
+</html>

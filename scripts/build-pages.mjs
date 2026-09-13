@@ -170,7 +170,10 @@ async function getLanguageDefinitions() {
         }));
 }
 
+const SKIP_CSP = process.argv.includes('--no-csp');
+
 function addProductionSecurityMeta(html, appConfig) {
+    if (SKIP_CSP) return html;
     const collab = appConfig.collab || {};
     const turnstileEnabled = collab.turnstile?.enabled === true;
     const connectSources = new Set([

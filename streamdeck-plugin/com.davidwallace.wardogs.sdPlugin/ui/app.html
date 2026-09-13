@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>WARDOGS Deck App</title>
+<link rel="stylesheet" href="pi.css">
+</head>
+<body>
+<div class="pi">
+  <div class="row">
+    <label for="exePath">App path</label>
+    <input id="exePath" type="text" data-setting="exePath" placeholder="%LOCALAPPDATA%\wardogs-deck\wardogs-deck.exe">
+  </div>
+  <div class="row">
+    <label for="port">API port</label>
+    <input id="port" type="number" min="1024" max="65535" data-global="port" data-default="8931">
+  </div>
+  <p class="hint">Leave the path empty to use the default install location. The port applies to every WARDOGS Deck action and must match the app (default 8931).</p>
+</div>
+<script src="pi.js"></script>
+</body>
+</html>

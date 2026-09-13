@@ -1,0 +1,43 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #2d2d2d;
+  color: #d8d8d8;
+  font: 13px "Segoe UI", system-ui, sans-serif;
+}
+.pi {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.row {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+.row label {
+  color: #9a9a9a;
+  text-align: right;
+}
+select, input {
+  width: 100%;
+  box-sizing: border-box;
+  background: #3d3d3d;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 5px 6px;
+  font: inherit;
+}
+select:focus, input:focus {
+  outline: none;
+  border-color: #0078d4;
+}
+.hint {
+  color: #8a8a8a;
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+}

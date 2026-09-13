@@ -1,11 +1,18 @@
 {
-  "name": "wardogs-artillery-calculator",
+  "name": "wardogs-deck",
   "private": true,
   "scripts": {
     "build": "node scripts/build-pages.mjs && node scripts/sync-locales.mjs && node scripts/version-assets.mjs",
     "dev": "node scripts/dev-server.mjs",
     "build-contours": "node scripts/build-contours.mjs",
     "test:scripts": "node --test scripts/lib/contours.test.mjs scripts/lib/dev-server-security.test.mjs",
-    "test:build": "node scripts/verify-build.mjs"
+    "test:build": "node scripts/verify-build.mjs",
+    "build:deck": "node scripts/build-pages.mjs --no-csp && node scripts/sync-locales.mjs && node scripts/version-assets.mjs",
+    "tauri": "tauri",
+    "deck:dev": "tauri dev",
+    "deck:build": "tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
   }
 }

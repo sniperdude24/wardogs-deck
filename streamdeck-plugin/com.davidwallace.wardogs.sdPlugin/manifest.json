@@ -1,0 +1,147 @@
+{
+  "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+  "Name": "WARDOGS Deck",
+  "Version": "0.1.0.0",
+  "Author": "David Wallace",
+  "Description": "Drive the WARDOGS Deck artillery calculator: dials set Artillery and Target coordinates, keys show distance, azimuth and MIL.",
+  "URL": "https://github.com/apollyon-sys/wardogs-calculator",
+  "UUID": "com.davidwallace.wardogs",
+  "Icon": "imgs/plugin-icon",
+  "CodePath": "bin/plugin.js",
+  "Category": "WARDOGS Deck",
+  "CategoryIcon": "imgs/plugin-icon",
+  "Nodejs": {
+    "Version": "24"
+  },
+  "SDKVersion": 2,
+  "Software": {
+    "MinimumVersion": "7.1"
+  },
+  "OS": [
+    {
+      "Platform": "windows",
+      "MinimumVersion": "10"
+    }
+  ],
+  "Actions": [
+    {
+      "Name": "Coordinate Dial",
+      "UUID": "com.davidwallace.wardogs.axis",
+      "Icon": "imgs/axis-icon",
+      "Tooltip": "Turn to adjust one coordinate axis of Artillery or Target. Press to cycle the step size (1.00 / 0.10 / 0.01).",
+      "Controllers": [
+        "Encoder"
+      ],
+      "Encoder": {
+        "layout": "layouts/axis.json",
+        "TriggerDescription": {
+          "Rotate": "Adjust coordinate",
+          "Push": "Cycle step 1.00 / 0.10 / 0.01",
+          "Touch": "Cycle step",
+          "LongTouch": "Copy value from the other point"
+        }
+      },
+      "PropertyInspectorPath": "ui/axis.html",
+      "States": [
+        {
+          "Image": "imgs/axis-key"
+        }
+      ],
+      "SupportedInMultiActions": false,
+      "UserTitleEnabled": false
+    },
+    {
+      "Name": "Firing Solution",
+      "UUID": "com.davidwallace.wardogs.result",
+      "Icon": "imgs/result-icon",
+      "Tooltip": "Shows MIL, azimuth or distance for the current Artillery/Target pair. Press to copy the firing line to the clipboard.",
+      "Controllers": [
+        "Keypad"
+      ],
+      "PropertyInspectorPath": "ui/result.html",
+      "States": [
+        {
+          "Image": "imgs/result-key"
+        }
+      ],
+      "UserTitleEnabled": false
+    },
+    {
+      "Name": "Weapon",
+      "UUID": "com.davidwallace.wardogs.weapon",
+      "Icon": "imgs/weapon-icon",
+      "Tooltip": "Shows the selected weapon. Press to switch to the next one.",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/weapon-key"
+        }
+      ],
+      "UserTitleEnabled": false
+    },
+    {
+      "Name": "Swap Artillery / Target",
+      "UUID": "com.davidwallace.wardogs.swap",
+      "Icon": "imgs/swap-icon",
+      "Tooltip": "Swap the Artillery and Target positions.",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/swap-key"
+        }
+      ],
+      "UserTitleEnabled": false
+    },
+    {
+      "Name": "Save Target",
+      "UUID": "com.davidwallace.wardogs.target-save",
+      "Icon": "imgs/save-icon",
+      "Tooltip": "Save the current Target to the saved-targets list.",
+      "Controllers": [
+        "Keypad"
+      ],
+      "States": [
+        {
+          "Image": "imgs/save-key"
+        }
+      ],
+      "UserTitleEnabled": false
+    },
+    {
+      "Name": "Saved Target Step",
+      "UUID": "com.davidwallace.wardogs.target-step",
+      "Icon": "imgs/step-icon",
+      "Tooltip": "Step to the next or previous saved target.",
+      "Controllers": [
+        "Keypad"
+      ],
+      "PropertyInspectorPath": "ui/target-step.html",
+      "States": [
+        {
+          "Image": "imgs/step-key"
+        }
+      ],
+      "UserTitleEnabled": false
+    },
+    {
+      "Name": "WARDOGS Deck App",
+      "UUID": "com.davidwallace.wardogs.app",
+      "Icon": "imgs/app-icon",
+      "Tooltip": "Shows whether the desktop app is running. Press to bring it to the front, or launch it when it is closed.",
+      "Controllers": [
+        "Keypad"
+      ],
+      "PropertyInspectorPath": "ui/app.html",
+      "States": [
+        {
+          "Image": "imgs/app-key"
+        }
+      ],
+      "UserTitleEnabled": false
+    }
+  ]
+}

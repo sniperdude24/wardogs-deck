@@ -24,3 +24,9 @@ Trace-*.json
 # Terrain binaries are published with their manifests to Cloudflare R2.
 # Keep local manifests and generated contours in Git for the toolchain.
 /data/terrain/**/*.bin
+
+# WARDOGS Deck
+/src-tauri/target/
+/src-tauri/gen/schemas
+/streamdeck-plugin/*.streamDeckPlugin
+/streamdeck-plugin/**/logs/

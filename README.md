@@ -1,92 +1,85 @@
-# WARDOGS Artillery Calculator
+# WARDOGS Deck
 
-[![Live App](https://img.shields.io/badge/Live-wardogs--artillery.com-d7a452?style=flat-square)](https://wardogs-artillery.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
-[![Vanilla JS](https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?style=flat-square&logo=javascript&logoColor=000)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![GitHub Pages](https://img.shields.io/badge/Hosted_on-GitHub_Pages-222?style=flat-square&logo=github)](https://pages.github.com/)
+A desktop build of the [WARDOGS Artillery Calculator](https://github.com/apollyon-sys/wardogs-calculator) by Apollyon, plus a Stream Deck + plugin that drives it. Turn the four dials to set the Artillery and Target coordinates you read off the in-game HUD; the keys show the firing solution (distance, azimuth, MIL) and switch weapons, swap points and step through saved targets.
 
-A lightweight, open-source **L81 Mortar** and **SPH-2** artillery calculator, live team map, and tactical planning tool for **WARDOGS**.
+Unofficial community project. Not affiliated with BULKHEAD or the WARDOGS team.
 
-**Live app:** https://wardogs-artillery.com/  
-**Mobile UI:** https://wardogs-artillery.com/mobile/  
+```
+Stream Deck +  --dials/keys-->  plugin (Node 24)  --HTTP 127.0.0.1:8931-->  WARDOGS Deck app (Tauri)
+                                                                             └─ the upstream calculator + js/bridge/deck-bridge.js
+```
 
-<table>
-  <tr>
-    <th width="72%">Desktop</th>
-    <th width="28%">Mobile</th>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src="assets/preview.png" alt="WARDOGS Artillery Calculator — Desktop">
-    </td>
-    <td align="center">
-      <img src="assets/preview_mobile.png" alt="WARDOGS Artillery Calculator — Mobile">
-    </td>
-  </tr>
-</table>
+The app window is the single source of truth: it owns clamping, undo history, saved targets and terrain correction. The plugin only sends dial/key input and paints whatever the app publishes.
 
----
+## Install
 
-## Interfaces
+1. **Desktop app** — run the installer from `src-tauri/target/release/bundle/nsis/` (or `npm run deck:build` to make it). It installs per-user to `%LOCALAPPDATA%\wardogs-deck\wardogs-deck.exe`, starts a local API on port 8931 and minimises to the tray when closed.
+2. **Stream Deck plugin** — double-click `streamdeck-plugin/com.davidwallace.wardogs.streamDeckPlugin` (or `streamdeck pack` to make it). Requires Stream Deck 7.1+.
+3. In the Stream Deck app, open the **WARDOGS Deck** category and drag:
+   - **Coordinate Dial** onto each of the four dials, then set Point/Axis in the inspector: Artillery X, Artillery Y, Target X, Target Y.
+   - **Firing Solution** onto keys. Default is the compact `D: / A: / M:` readout; the inspector also offers MIL, Azimuth, Distance or a stacked view, and a **Press does** setting (copy, swap, next weapon, save target, next/prev target, focus app, or nothing) so the readout key doubles as a button.
+   - **Weapon**, **Swap**, **Save Target**, **Saved Target Step** and **WARDOGS Deck App** as you like.
 
-The project ships two interfaces from the same repository and GitHub Pages deployment:
+Map tiles and Terrain3D data stream from the upstream CDN at runtime, so the map needs internet; distance, azimuth and MIL work offline.
 
-- **Desktop** — `/`
-- **Mobile** — `/mobile/`
+## Using it
 
-Phones are automatically routed from the desktop entry pages to the matching mobile route. The mobile UI is a separate map-first interface with touch panning, pinch zoom, touch-friendly point placement, Map Tools, and a bottom-sheet calculator.
+| Control | Action |
+|---|---|
+| Turn dial | Move that axis by the current step (fast spins accelerate). The strip shows the coordinate with the digits the dial moves in gold, the step size (`1.00` / `.10` / `.01`) above them, and a blue (artillery) or red (target) tab |
+| Press dial / tap strip | Cycle step 1.00 → 0.10 → 0.01 coordinate units (100 m / 10 m / 1 m) |
+| Long-press strip | Copy this axis from the other point |
+| Firing Solution key | Live `D: 360 m / A: 270.0° / M: 689` readout; red border = out of range. Press runs the configured action (default: copy `AZ 123.4°  MIL 850  DIST 512 m` to the clipboard) |
+| Weapon key | L81 Mortar ↔ SPH-2 |
+| App key | Focus the window, or launch the app when it is closed |
 
-Both interfaces reuse the same calculator logic, maps, tile pyramid, configuration, translations, saved targets, drawings, browser storage, and optional live team lobbies.
+Everything the dials do goes through the same code path as dragging on the map, so Ctrl+Z in the window undoes dial edits too.
 
-## Live Team Lobbies
+## Local API
 
-Create a lobby and share its invite link or code to plan on the same tactical map. Drawings, zones, polygons, and user markers synchronise live. Every player keeps a separate weapon, artillery point, target, and range circle; teammates see labelled player positions without duplicate range circles.
+Bound to 127.0.0.1 only. Port can be changed with the `WARDOGS_DECK_PORT` environment variable (and in the App key's inspector).
 
-Lobby traffic starts only after a player creates or joins a room. See [Collaborative lobbies](docs/lobbies.md) for deployment, privacy, recovery, limits, and Cloudflare configuration.
+| Route | Purpose |
+|---|---|
+| `GET /api/ping` | App name and version |
+| `GET /api/state` | Latest firing-solution snapshot (`{ ok, state }`) |
+| `POST /api/cmd` | `{ "cmd": "nudge", "point": "target", "axis": "x", "delta": 0.1 }`, also `set`, `swap`, `reset`, `weapon`, `weapon-next`, `save-target`, `target-next`, `target-prev`, `target-restore`, `copy`, `focus` |
+| `POST /api/focus` | Bring the window to the front |
 
-## Localization
-
-The shared locale system supports English, Russian, Ukrainian, German, French, Spanish, Polish, Portuguese, Simplified Chinese, Korean, Japanese, and the non-indexed Cat locale.
-
-## Documentation
-
-Detailed documentation is split into focused files to keep this README concise.
-
-- [Features & weapons](docs/features.md) — calculator features, Map Tools, weapons, touch controls, and coordinate system
-- [Maps](docs/maps.md) — map configuration, tile structure, bounds, marker zoom visibility, and adding new maps
-- [Mobile interface](docs/mobile.md) — mobile routes, automatic routing, touch controls, and deployment architecture
-- [Localization](docs/localization.md) — supported languages, shared translations, automatic language selection, localized URLs, and SEO metadata
-- [Development](docs/development.md) — project structure, local development, unified build process, and GitHub Pages deployment
-- [Analytics](docs/analytics.md) — Umami custom events, event payloads, debouncing, and privacy considerations
-- [Message of the Day](docs/motd.md) — MOTD configuration, localization, and behavior
-- [Collaborative lobbies](docs/lobbies.md) — live team map behaviour, Cloudflare deployment, limits, privacy, and recovery
-- [Security hardening](docs/security.md) — public-source threat model, Cloudflare headers, secrets, CI, and residual risks
-- [Contributing](docs/contributing.md) — contribution guidelines
-- [License & Disclaimer](docs/legal.md) — MIT scope, third-party assets, and project disclaimer
-
-## Quick Start
+## Development
 
 ```bash
-npm run build
-cd dist
-python -m http.server 8000
+npm install
+npm run dev          # upstream dev server on http://localhost:8000 (bridge is inert in a browser)
+npm run deck:dev     # Tauri window against the dev server
+npm run deck:build   # dist/ + installer
 ```
 
-Then open:
+Plugin:
 
-```text
-Desktop:            http://localhost:8000/
-Mobile:             http://localhost:8000/mobile/
+```bash
+cd streamdeck-plugin
+streamdeck link com.davidwallace.wardogs.sdPlugin   # once
+streamdeck restart com.davidwallace.wardogs         # after edits
+streamdeck validate com.davidwallace.wardogs.sdPlugin
+streamdeck pack com.davidwallace.wardogs.sdPlugin
 ```
 
-## Contributing
+Icons are generated by `python scripts/deck-icons.py` followed by `npx tauri icon src-tauri/icons/source.png -o src-tauri/icons`.
 
-Corrections, map data improvements, localization updates, bug fixes, and QoL improvements are welcome.
+### Keeping up with upstream
 
-See [Contributing](docs/contributing.md) for details.
+The repository is a fork with `upstream` pointing at apollyon-sys/wardogs-calculator. Our changes are confined to:
+
+- `js/bridge/deck-bridge.js` (new)
+- `src/pages/*.html` — analytics and mobile redirect removed, bridge script added
+- `config/app.json` — lobbies, feedback and Turnstile disabled
+- `scripts/build-pages.mjs` — `--no-csp` flag (the site CSP would block the Tauri IPC)
+- `package.json` — `build:deck` / `deck:*` scripts
+- `src-tauri/`, `streamdeck-plugin/`, `scripts/deck-icons.py` (new)
+
+`git pull upstream main` should merge cleanly most of the time.
 
 ## License
 
-Original project source code is licensed under the [MIT License](LICENSE).
-
-WARDOGS assets and other third-party materials are not covered by the MIT License. See [License & Disclaimer](docs/legal.md) for details.
+MIT for the code here and upstream (see `LICENSE`). WARDOGS assets and third-party materials keep their own terms; see upstream `docs/legal.md`.

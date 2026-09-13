@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Coordinate Dial</title>
+<link rel="stylesheet" href="pi.css">
+</head>
+<body>
+<div class="pi">
+  <div class="row">
+    <label for="point">Point</label>
+    <select id="point" data-setting="point" data-default="origin">
+      <option value="origin">Artillery</option>
+      <option value="target">Target</option>
+    </select>
+  </div>
+  <div class="row">
+    <label for="axis">Axis</label>
+    <select id="axis" data-setting="axis" data-default="x">
+      <option value="x">X</option>
+      <option value="y">Y</option>
+    </select>
+  </div>
+  <div class="row">
+    <label for="step">Step</label>
+    <select id="step" data-setting="step" data-default="0.1">
+      <option value="1">1.00 (100 m)</option>
+      <option value="0.1">0.10 (10 m)</option>
+      <option value="0.01">0.01 (1 m)</option>
+    </select>
+  </div>
+  <p class="hint">Turn the dial to move this axis. Press the dial or tap the screen to cycle the step. Long-press the screen to copy the value from the other point.</p>
+</div>
+<script src="pi.js"></script>
+</body>
+</html>
