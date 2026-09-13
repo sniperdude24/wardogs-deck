@@ -7,6 +7,59 @@
    page runs in an ordinary browser.
    ========================= */
 
+/*
+ * Right-click on the map toggles which point a left-click places
+ * (Artillery <-> Target). Right-drag still pans: the toggle only fires
+ * when the button is released within a few pixels of where it went down.
+ * Works in the browser too, so it does not depend on the Tauri shell.
+ */
+(function () {
+    'use strict';
+
+    const canvas = document.getElementById('canvas');
+    const RIGHT_BUTTON = 2;
+    const DRAG_THRESHOLD_PX = 4;
+
+    if (!canvas) {
+        return;
+    }
+
+    let downAt = null;
+
+    canvas.addEventListener('mousedown', event => {
+        downAt =
+            event.button === RIGHT_BUTTON
+                ? { x: event.clientX, y: event.clientY }
+                : null;
+    });
+
+    canvas.addEventListener('contextmenu', event => {
+        const start = downAt;
+        downAt = null;
+
+        if (!start) {
+            return;
+        }
+
+        const moved = Math.hypot(
+            event.clientX - start.x,
+            event.clientY - start.y
+        );
+
+        if (moved > DRAG_THRESHOLD_PX) {
+            return;
+        }
+
+        /* Click the other mode button so the sidebar stays in sync. */
+        const next =
+            S.mode === 'origin'
+                ? 'targetMode'
+                : 'originMode';
+
+        document.getElementById(next)?.click();
+    });
+})();
+
 (function () {
     'use strict';
 
