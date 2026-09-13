@@ -8,36 +8,96 @@
    ========================= */
 
 /*
- * Right-click on the map toggles which point a left-click places
- * (Artillery <-> Target). Right-drag still pans: the toggle only fires
- * when the button is released within a few pixels of where it went down.
+ * Direct placement: when the toggle is on, a left click places Artillery
+ * and a right click places Target, and the Artillery/Target buttons are
+ * disabled. When it is off the upstream behaviour applies unchanged (the
+ * buttons pick the point a left click places). Right-drag pans either way.
  * Works in the browser too, so it does not depend on the Tauri shell.
  */
 (function () {
     'use strict';
 
     const canvas = document.getElementById('canvas');
-    const RIGHT_BUTTON = 2;
-    const DRAG_THRESHOLD_PX = 4;
+    const modeBox = document.querySelector('.section .mode');
 
-    if (!canvas) {
+    if (!canvas || !modeBox) {
         return;
     }
 
+    const STORAGE_KEY = 'wardogs-deck-direct-place';
+    const RIGHT_BUTTON = 2;
+    const DRAG_THRESHOLD_PX = 4;
+
+    const label = document.createElement('label');
+    label.className = 'save-artillery-option deck-direct-place';
+    label.style.marginTop = '8px';
+
+    const toggle = document.createElement('input');
+    toggle.type = 'checkbox';
+    toggle.id = 'directPlace';
+
+    const text = document.createElement('span');
+    text.textContent = 'Left click = Artillery, right click = Target';
+
+    label.append(toggle, text);
+    modeBox.insertAdjacentElement('afterend', label);
+
+    /* Same effect as clicking the sidebar buttons, usable before bindEvents(). */
+    function setMode(mode) {
+        S.mode = mode;
+        document.getElementById('originMode')?.classList.toggle('active', mode === 'origin');
+        document.getElementById('targetMode')?.classList.toggle('active', mode === 'target');
+    }
+
+    function apply() {
+        const on = toggle.checked;
+
+        modeBox.style.opacity = on ? '0.4' : '';
+        modeBox.style.pointerEvents = on ? 'none' : '';
+
+        if (on) {
+            setMode('origin');
+        }
+
+        try {
+            localStorage.setItem(STORAGE_KEY, on ? '1' : '0');
+        } catch (_) {
+            /* private mode etc.; the toggle still works for this session */
+        }
+    }
+
+    try {
+        toggle.checked = localStorage.getItem(STORAGE_KEY) === '1';
+    } catch (_) {
+        toggle.checked = false;
+    }
+
+    toggle.addEventListener('change', apply);
+    apply();
+
     let downAt = null;
 
+    /*
+     * Capture phase so this runs before the upstream mousedown handler,
+     * which reads S.mode to decide what a left click places. Undo can
+     * restore an old mode, so re-assert Artillery on every left click.
+     */
     canvas.addEventListener('mousedown', event => {
+        if (toggle.checked && event.button === 0 && S.mode !== 'origin') {
+            setMode('origin');
+        }
+
         downAt =
             event.button === RIGHT_BUTTON
                 ? { x: event.clientX, y: event.clientY }
                 : null;
-    });
+    }, true);
 
     canvas.addEventListener('contextmenu', event => {
         const start = downAt;
         downAt = null;
 
-        if (!start) {
+        if (!toggle.checked || !start) {
             return;
         }
 
@@ -50,13 +110,19 @@
             return;
         }
 
-        /* Click the other mode button so the sidebar stays in sync. */
-        const next =
-            S.mode === 'origin'
-                ? 'targetMode'
-                : 'originMode';
+        if (typeof isPointMapLocked === 'function' && isPointMapLocked('target')) {
+            return;
+        }
 
-        document.getElementById(next)?.click();
+        const rect = canvas.getBoundingClientRect();
+        const p = toWorld(event.clientX - rect.left, event.clientY - rect.top);
+
+        pushMapToolHistory();
+
+        S.target = { x: p.x, y: p.y };
+        clamp(S.target);
+
+        inputs();
     });
 })();
 

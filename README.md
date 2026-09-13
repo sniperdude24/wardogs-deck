@@ -32,7 +32,7 @@ Map tiles and Terrain3D data stream from the upstream CDN at runtime, so the map
 | Firing Solution key | Live `D: 360 m / A: 270.0° / M: 689` readout; red border = out of range. Press runs the configured action (default: copy `AZ 123.4°  MIL 850  DIST 512 m` to the clipboard) |
 | Weapon key | L81 Mortar ↔ SPH-2 |
 | App key | Focus the window, or launch the app when it is closed |
-| Right-click on the map (in the app window) | Switch which point a left-click places: Artillery ↔ Target. Right-drag still pans |
+| Direct placement toggle (sidebar, under Point selection) | On: left click places Artillery, right click places Target, and the Artillery/Target buttons are disabled. Off: the original behaviour, the buttons choose what a left click places. Right-drag pans either way |
 
 Everything the dials do goes through the same code path as dragging on the map, so Ctrl+Z in the window undoes dial edits too.
 
